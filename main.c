@@ -33,20 +33,24 @@ int main(int argc, char *argv[]){
 	//Sempre esperando por novos comandos
     while(1){
         //Indica ao usuario que o terminal esta pronto para receber input
-        printf("multimedia> ");
+        printf("potato> ");
         //le a linha inteira, considerada um comando, e a processa.
         readLine(buffer,LINE_BUFFER);
         commandArgv = getTokens(&commandArgc, buffer);
+
         if(commandArgc == 0) continue;
         if(commandArgv[0][0] == '#') continue;
+
         if(strcmp(commandArgv[0],"help") == 0){
             help(commandArgc, commandArgv);
         } else if(strcmp(commandArgv[0],"quit") == 0){
             break;
         } else if(strcmp(commandArgv[0],"q") == 0){
             break;
+        } else if(strcmp(commandArgv[0],"compress") == 0){
+            compressInput(commandArgc, commandArgv);
         } else {
-            printf("Shell: Command '%s' not found. See 'help' for available commands.\n");
+            printf("Shell: Command '%s' not found. See 'help' for available commands.\n",commandArgv[0]);
         }
 
 
@@ -54,7 +58,7 @@ int main(int argc, char *argv[]){
         if(debug){
             int i;
             for(i = 0; i < commandArgc; i++){
-                printf("{%s} %p\n", commandArgv[i], commandArgv[i]);
+                printf("{%s}\n", commandArgv[i]);
             }
         }
         free(commandArgv);
