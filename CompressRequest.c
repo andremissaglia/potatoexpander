@@ -1,8 +1,24 @@
 #include "CompressRequest.h"
-
+#include "RequestStruct.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 void compressInput(int argc, char *argv[]){
-    printf("compress: Syntax error. See 'compress help' for correct use.");
+    if(argc != 3){
+        printf("compress: Syntax error. See 'compress help' for correct use.\n");
+        return;
+    }
+    RequestStruct *request = newRequestStruct();
+    request->input = fopen(argv[1],"rb");
+    if(request->input == NULL) {
+        printf("compress: file '%s' does not exist.\n", argv[1]);
+        return;
+    }
+    request->output = fopen(argv[1],"wb");
+    if(request->output == NULL) {
+        printf("compress: could not save on file %s.\n", argv[1]);
+        return;
+    }
 }
 
 void showCompressHelp(){
