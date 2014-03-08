@@ -3,3 +3,5 @@
 *.layout
 *.depend
 bin/
+*.exe
+*.dev
