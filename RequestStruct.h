@@ -18,5 +18,6 @@ RequestStruct *newRequestStruct();
 /**
 * Apaga a estrutura fechando seus arquivos.
 */
+void freeRequestStruct(RequestStruct *rs);
 #endif
 

@@ -5,3 +5,9 @@ RequestStruct *newRequestStruct(){
     req->output = NULL;
     return req;
 }
+
+void freeRequestStruct(RequestStruct *rs){
+    fclose(rs->input);
+    fclose(rs->open);
+    free(rs);
+}
