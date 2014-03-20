@@ -30,6 +30,38 @@ BMPHeader *readBMPHeader(FILE *fp){
 
     return bmp;
 }
+void writeBMPHeader(FILE *fp, BMPHeader *bmp){
+    fseek(fp,0,SEEK_SET);
+
+    fwrite(&(bmp->type), sizeof(unsigned short), 1,fp);
+    fwrite(&(bmp->size), sizeof(unsigned int), 1,fp);
+    fwrite(&(bmp->reserved1), sizeof(unsigned short), 1,fp);
+    fwrite(&(bmp->reserved2), sizeof(unsigned short), 1,fp);
+    fwrite(&(bmp->starting_pos), sizeof(unsigned int), 1,fp);
+
+    fwrite(&(bmp->DIPSize), sizeof(unsigned int), 1,fp);
+    fwrite(&(bmp->width), sizeof(int), 1,fp);
+    fwrite(&(bmp->height), sizeof(int), 1,fp);
+    if(bmp->DIPSize == 12) return bmp; //Compatibilidade com BITMAPCOREHEADER
+
+    //Continuando a ler com BITMAPINFOHEADER
+    fwrite(&(bmp->color_planes), sizeof(unsigned short), 1,fp);
+    fwrite(&(bmp->bpp), sizeof(unsigned short), 1,fp); // TODO: tratar caso com bpp != 24
+    fwrite(&(bmp->compression_method), sizeof(unsigned int), 1,fp);
+    fwrite(&(bmp->bitmap_size), sizeof(unsigned int), 1,fp);
+    fwrite(&(bmp->resolution_x), sizeof(int), 1,fp);
+    fwrite(&(bmp->resolution_y), sizeof(int), 1,fp);
+    fwrite(&(bmp->ncolors), sizeof(unsigned int), 1,fp);
+    fwrite(&(bmp->important_colors), sizeof(unsigned int), 1,fp);
+
+    //preenche com 0 ateh o inicio da matriz
+
+    unsigned char c = 0;
+    while(bmp->starting_pos > ftell(fp)){
+        fwrite(&c, sizeof(unsigned char),1, fp);
+    }
+}
+
 BMPImage *readBMP(FILE *fp){
     BMPImage *bmp = (BMPImage *) malloc(sizeof(BMPImage));
     bmp->header = readBMPHeader(fp);
@@ -51,19 +83,31 @@ BMPImage *readBMP(FILE *fp){
 
     int rowsize = ((bmp->header->bpp*bmp->header->width + 31)/32)*4;
     int padding = rowsize - sizeof(unsigned char)*3*bmp->header->width;
-    int skip;
-    printf("padding: %d\n", padding);
     for(j = 0; j < bmp->header->height ;j++){
         for(i = 0; i < bmp->header->width;i++){
             fread(&(bmp->B[i][j]), sizeof(unsigned char), 1,fp);
             fread(&(bmp->G[i][j]), sizeof(unsigned char), 1,fp);
             fread(&(bmp->R[i][j]), sizeof(unsigned char), 1,fp);
-            printf("%x%x%x ", bmp->R[i][j], bmp->G[i][j], bmp->B[i][j]);
         }
-        fread(&skip, padding, 1,fp);
-        printf("\n");
+        fseek(fp, padding, SEEK_CUR);
     }
     return bmp;
+}
+void writeBMP(FILE *fp, BMPImage *bmp){
+    writeBMPHeader(fp,bmp->header);
+    fseek(fp,bmp->header->starting_pos, SEEK_SET);
+    int rowsize = ((bmp->header->bpp*bmp->header->width + 31)/32)*4;
+    int padding = rowsize - sizeof(unsigned char)*3*bmp->header->width;
+    int skip = 0;
+    int i,j;
+    for(j = 0; j < bmp->header->height ;j++){
+        for(i = 0; i < bmp->header->width;i++){
+            fwrite(&(bmp->B[i][j]), sizeof(unsigned char), 1,fp);
+            fwrite(&(bmp->G[i][j]), sizeof(unsigned char), 1,fp);
+            fwrite(&(bmp->R[i][j]), sizeof(unsigned char), 1,fp);
+        }
+        fwrite(&skip,sizeof(unsigned char), padding, fp);
+    }
 }
 void freeBMP(BMPImage *bmp){
     free(bmp->header);

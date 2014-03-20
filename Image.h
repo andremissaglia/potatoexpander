@@ -2,7 +2,6 @@
 #define __IMAGE
 #include <stdio.h>
 
-
 /**
 * Esta estrutura contem o cabecalho da imagem bmp
 * Contem informacoes do BITMAPINFOHEADER, sendo que qualquer outra coisa eh desconsiderada
@@ -39,9 +38,12 @@ typedef struct {
     unsigned char **B;
 
 } BMPImage;
+//TODO:documentar
 BMPHeader *newBMPHeader();
 BMPHeader *readBMPHeader(FILE *fp);
+void writeBMPHeader(FILE *fp, BMPHeader *bmp);
 BMPImage *readBMP(FILE *fp);
+void writeBMP(FILE *fp, BMPImage *bmp);
 void freeBMP(BMPImage *bmp);
 
 #endif
