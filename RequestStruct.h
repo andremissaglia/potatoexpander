@@ -1,4 +1,4 @@
-#ifndef __RRQUESTSTRUCT
+#ifndef __REQUESTSTRUCT
 #define __REQUESTSTRUCT
 #include <stdlib.h>
 #include <stdio.h>
