@@ -19,10 +19,12 @@ typedef struct {
         noArvore* raiz; 
 }Huffman;
 
-Huffman* newHuffman(); //cria a struct de Huffman
+Huffman* newHuffman(int tamanhoTexto, char* texto); //cria a struct de Huffman
 void freeHuffman(Huffman* h);//libera a struct de Huffman
 void writechar(Huffman *h, char c);//pega char por char do textoEntrada, codifica e poe no buffer
 void writeint(Huffman *h, char c);
+void contaFreq(Huffman *h);
+void criaArvore(Huffman *h);
 void writeall(Huffman *h, FILE* output);//escreve no arquivo, chama as funcoes write e cria arvore de huffman
 
 #endif

@@ -42,7 +42,7 @@ void writeBMPHeader(FILE *fp, BMPHeader *bmp){
     fwrite(&(bmp->DIPSize), sizeof(unsigned int), 1,fp);
     fwrite(&(bmp->width), sizeof(int), 1,fp);
     fwrite(&(bmp->height), sizeof(int), 1,fp);
-    if(bmp->DIPSize == 12) return bmp; //Compatibilidade com BITMAPCOREHEADER
+    if(bmp->DIPSize == 12) return; //Compatibilidade com BITMAPCOREHEADER
 
     //Continuando a ler com BITMAPINFOHEADER
     fwrite(&(bmp->color_planes), sizeof(unsigned short), 1,fp);
