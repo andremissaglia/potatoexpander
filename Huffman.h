@@ -9,19 +9,19 @@ struct _noArvore{
         int freq;
         noArvore* esq; 
         noArvore* dir; 
-}
+};
 
 typedef struct {
-
+        int textSize;
         char* textoEntrada;
         char buffer;
         int freq[256];
-        noArvore* raiz;//guarda a arvore de Huffman 
+        noArvore* raiz; 
 }Huffman;
 
 Huffman* newHuffman(); //cria a struct de Huffman
 void freeHuffman(Huffman* h);//libera a struct de Huffman
-void writechar(Huffman *h, char c);//escreve o char no texto temporario 
+void writechar(Huffman *h, char c);//pega char por char do textoEntrada, codifica e poe no buffer
 void writeint(Huffman *h, char c);
 void writeall(Huffman *h, FILE* output);//escreve no arquivo, chama as funcoes write e cria arvore de huffman
 

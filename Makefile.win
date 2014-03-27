@@ -5,8 +5,8 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = 
-OBJ  = CompressRequest.o main.o $(RES)
-LINKOBJ  = CompressRequest.o main.o $(RES)
+OBJ  = CompressRequest.o main.o Compress.o Image.o Huffman.o Blocos.o $(RES)
+LINKOBJ  = CompressRequest.o main.o Compress.o Image.o Huffman.o Blocos.o $(RES)
 LIBS =  -L"C:/Dev-Cpp/lib"  
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
@@ -31,3 +31,15 @@ CompressRequest.o: CompressRequest.c
 
 main.o: main.c
 	$(CC) -c main.c -o main.o $(CFLAGS)
+
+Compress.o: Compress.c
+	$(CC) -c Compress.c -o Compress.o $(CFLAGS)
+
+Image.o: Image.c
+	$(CC) -c Image.c -o Image.o $(CFLAGS)
+
+Huffman.o: Huffman.c
+	$(CC) -c Huffman.c -o Huffman.o $(CFLAGS)
+
+Blocos.o: Blocos.c
+	$(CC) -c Blocos.c -o Blocos.o $(CFLAGS)
