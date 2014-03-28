@@ -44,6 +44,7 @@ BMPHeader *readBMPHeader(FILE *fp);
 void writeBMPHeader(FILE *fp, BMPHeader *bmp);
 BMPImage *readBMP(FILE *fp);
 void writeBMP(FILE *fp, BMPImage *bmp);
+void make_BMPHeader(BMPImage *bmp);
 void freeBMP(BMPImage *bmp);
 
 #endif
