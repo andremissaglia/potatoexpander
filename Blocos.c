@@ -44,7 +44,15 @@ BMPImage *recriateImage(Blocos *b){
     make_BMPHeader(bmp);
     return bmp;
 }
-void writeHuffman(Huffman *h){
+void writeHuffman(Blocos *b, Huffman *h){
+    int i,j;
+    writeInt(h,b->width);
+    writeInt(h,b->height);
+    for(i = 0; i < b->nblocos;i++){
+        for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
+            writeChar(h,b->blocos[i][j]);
+        }
+    }
 }
 void writeBlocks(unsigned char **matrix, int width, int height, unsigned char **blocks){
     int i,j;//posicao do bloco
@@ -79,20 +87,20 @@ unsigned char **makeMatrix(int width, int height, unsigned char **blocks){
         }
         return matrix;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Blocos *readBlocksHuffman(Huffman *h, FILE *input){
+    int i,j;
+    Blocos *b = newBlocos();
+    b->width = readInt(h,input);
+    b->height = readInt(h, input);
+    b->nblocos = 3*b->width*b->height*BLOCKSIZE*BLOCKSIZE;
+    b->blocos = (unsigned char **) malloc(b->nblocos*sizeof(unsigned char*));
+    printf("%d\n", b->nblocos);
+    for(i = 0; i < b->nblocos;i++){
+        b->blocos[i] = (unsigned char *) malloc(BLOCKSIZE*BLOCKSIZE*sizeof(unsigned char));
+        for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
+            b->blocos[i][j] = readChar(h,input);
+        }
+    }
+    printf("hey\n");
+    return b;
+}

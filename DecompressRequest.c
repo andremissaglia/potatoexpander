@@ -1,16 +1,16 @@
-#include "CompressRequest.h"
+#include "DecompressRequest.h"
 #include "Compress.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-void compressInput(int argc, char *argv[]){
+void decompressInput(int argc, char *argv[]){
     if(argc == 2 && strcmp(argv[1],"help") == 0){
-        showCompressHelp();
+        showDecompressHelp();
         return;
     }
     if(argc != 3){
-        printf("compress: Syntax error. See 'compress help' for correct use.\n");
-        showCompressHelp();
+        printf("decompress: Syntax error. See 'decompress help' for correct use.\n");
+        showDecompressHelp();
         return;
     }
     FILE *input = fopen(argv[1],"rb");
@@ -23,15 +23,16 @@ void compressInput(int argc, char *argv[]){
         printf("compress: could not save on file %s.\n", argv[1]);
         return;
     }
-    compress(input, output);
+    decompress(input, output);
     fclose(input);
     fclose(output);
 }
 
-void showCompressHelp(){
+void showDecompressHelp(){
     printf("Usage:\n");
-    printf("\tcompress <inputFile> <outputFile>\n");
+    printf("\tdecompress <inputFile> <outputFile>\n");
     printf("\n\n");
-    printf("<inputFile>\t O nome do arquivo BMP a ser comprimido.\n");
-    printf("<outputFile>\t Nome do arquivo de saida.\n");
+    printf("<inputFile>\t O nome do arquivo comprimido.\n");
+    printf("<outputFile>\t Imagem .bmp de saida.\n");
 }
+

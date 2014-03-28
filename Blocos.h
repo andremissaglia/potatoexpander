@@ -25,7 +25,7 @@ Blocos* newBlocos();
 void freeBlocos(Blocos* b);
 void createBlocos(BMPImage * bmp, Blocos *b);
 BMPImage *recriateImage(Blocos *b);
-void writeHuffman(Huffman *h);
-
+void writeHuffman(Blocos *b, Huffman *h);
+Blocos *readBlocksHuffman(Huffman *h, FILE *input);
 
 #endif

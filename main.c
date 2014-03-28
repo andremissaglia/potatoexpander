@@ -1,3 +1,9 @@
+/*
+* Andre Badawi Missaglia 8066523
+* Jose Carlos Marquetti Junior 6909564
+* Newton Jhun Koga 6426660
+*/
+
 /**
 * Arquivo inicial do sistema.
 * Contem um shell implementado, e chamara arquivos separados para os comandos especificos.
@@ -7,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "CompressRequest.h"
+#include "DecompressRequest.h"
 
 #define LINE_BUFFER 800
 const int debug=0;
@@ -49,6 +56,8 @@ int main(int argc, char *argv[]){
             break;
         } else if(strcmp(commandArgv[0],"compress") == 0){
             compressInput(commandArgc, commandArgv);
+        } else if(strcmp(commandArgv[0],"decompress") == 0){
+            decompressInput(commandArgc, commandArgv);
         } else {
             printf("Shell: Command '%s' not found. See 'help' for available commands.\n",commandArgv[0]);
         }
