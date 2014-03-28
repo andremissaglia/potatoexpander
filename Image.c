@@ -1,6 +1,12 @@
 #include "Image.h"
 BMPHeader *newBMPHeader(){
     BMPHeader *bmp = (BMPHeader *) calloc(1,sizeof(BMPHeader));
+    bmp->type = 0x4d42; // BM
+    bmp->starting_pos = 0x36; //usando BITMAPINFOHEADER
+    bmp->DIPSize = 40;
+    bmp->color_planes = 1;
+    bmp->bpp = 24;
+
     return bmp;
 }
 BMPHeader *readBMPHeader(FILE *fp){
@@ -27,7 +33,6 @@ BMPHeader *readBMPHeader(FILE *fp){
     fread(&(bmp->resolution_y), sizeof(int), 1,fp);
     fread(&(bmp->ncolors), sizeof(unsigned int), 1,fp);
     fread(&(bmp->important_colors), sizeof(unsigned int), 1,fp);
-
     return bmp;
 }
 void writeBMPHeader(FILE *fp, BMPHeader *bmp){
@@ -108,6 +113,11 @@ void writeBMP(FILE *fp, BMPImage *bmp){
         }
         fwrite(&skip,sizeof(unsigned char), padding, fp);
     }
+}
+void make_BMPHeader(BMPImage *bmp){
+    int rowsize = ((bmp->header->bpp*bmp->header->width + 31)/32)*4;
+    bmp->header->bitmap_size = rowsize*bmp->header->height;
+    bmp->header->size = bmp->header->DIPSize+14+bmp->header->bitmap_size;
 }
 void freeBMP(BMPImage *bmp){
     free(bmp->header);
