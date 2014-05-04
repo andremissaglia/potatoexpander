@@ -2,7 +2,7 @@
 #define __BLOCOS
 #include <stdio.h>
 #include "Image.h"
-#include "Huffman.h"
+#include "Carreira.h"
 /**
 * O codigo gerara blocos de 8x8, e espera que a imagem seja de dimensoes
 * multiplas deste valor.
@@ -25,7 +25,7 @@ Blocos* newBlocos();
 void freeBlocos(Blocos* b);
 void createBlocos(BMPImage * bmp, Blocos *b);
 BMPImage *recriateImage(Blocos *b);
-void writeHuffman(Blocos *b, Huffman *h);
-Blocos *readBlocksHuffman(Huffman *h, FILE *input);
+void writeRL(Blocos *b, Carreira *rl);
+Blocos *readBlocksRL(Carreira *rl);
 
 #endif

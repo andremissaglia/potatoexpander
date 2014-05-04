@@ -1,7 +1,8 @@
 #include "DecompressRequest.h"
-#include "Compress.h"
+#include "Decompress.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void decompressInput(int argc, char *argv[]){
     if(argc == 2 && strcmp(argv[1],"help") == 0){

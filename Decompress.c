@@ -2,15 +2,19 @@
 #include "Image.h"
 #include "Blocos.h"
 #include "Huffman.h"
+
+#include <stdlib.h>
 void decompress(FILE *input, FILE *output){
     Huffman *h = readHuffmanFile(input);
+    Carreira *rl = newCarreira(h);
 
-    Blocos *b = readBlocksHuffman(h,input);
-    printf("hey1\n");
+    Blocos *b = readBlocksRL(rl);
     BMPImage *bmp = recriateImage(b);
-    printf("hey2\n");
-
     writeBMP(output,bmp);
+    free(rl);
+    freeHuffman(h);
+    freeBlocos(b);
+    freeBMP(bmp);
 }
 
 

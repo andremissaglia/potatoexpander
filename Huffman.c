@@ -1,5 +1,7 @@
 #include "Huffman.h"
 #include <stdlib.h>
+
+#define MAXHUFFLENGTH 256
 //cria uma instancia do objeto de controle para huffman
 Huffman* newHuffman(){
         int i;
@@ -12,9 +14,32 @@ Huffman* newHuffman(){
             h->freq[i] = 0;
         }
         h->bufferPos = 7;
+        h->textoEntradaPos = 0;
+
+        h->arvore = NULL;
+        h->dicionario = NULL;
         return h;
 }
-
+void freeHuffmanTree(noArvore *no){
+    if(no == NULL) return;
+    freeHuffmanTree(no->dir);
+    freeHuffmanTree(no->esq);
+    free(no);
+}
+void freeHuffman(Huffman* h){
+    int i;
+    if(h->textoEntrada != NULL) free(h->textoEntrada);
+    if(h->dicionario != NULL) {
+        for(i = 0; i < h->nVerbetes;i++){
+            free(h->dicionario->palavra[i]->huffCode);
+            free(h->dicionario->palavra[i]);
+        }
+        free(h->dicionario->palavra);
+        free(h->dicionario);
+    }
+    freeHuffmanTree(h->arvore);
+    free(h);
+}
 /**
 * Conta frequencia dos caracteres.
 */
@@ -127,7 +152,7 @@ void criaArvore(Huffman *h, int flagDescompressao){
 //faz a busca em profundidade para montar o dicionario
 void DFS(Dicionario* dicionario, noArvore* tree, char* codigo){
     int i;
-    char* bufferDir, *bufferEsq;
+    char bufferDir[MAXHUFFLENGTH], bufferEsq[MAXHUFFLENGTH];
 
     if((tree->esq == NULL)&&(tree->esq == NULL)){//checa se eh noh folha
         for(i=0; i<dicionario->nVerbetes;i++){
@@ -140,8 +165,6 @@ void DFS(Dicionario* dicionario, noArvore* tree, char* codigo){
         }
     }else{//se nao eh folha chama recursivamente a funcao
         //buffer q recebe 0 para uma chamada recursiva a direita e 1 para uma chamada a esquerda
-        bufferDir = (char*)malloc(sizeof(char)*9);
-        bufferEsq = (char*)malloc(sizeof(char)*9);
         strcpy(bufferDir, codigo);
         strcpy(bufferEsq, codigo);
 
@@ -193,7 +216,7 @@ void ordenaDicionario(int nVerbetes, Dicionario* dicionario){
 */
 void criaDicionario(Huffman *h){
     Dicionario* dicionario;
-    char* codigo;
+    char codigo[MAXHUFFLENGTH];
     int size,i;
 
 
@@ -207,12 +230,11 @@ void criaDicionario(Huffman *h){
     for(i=0;i<size;i++){
         dicionario->palavra[i] = (Verbete*)malloc(sizeof(Verbete));//cria cada verbete
         dicionario->palavra[i]->valor = 0;
-        dicionario->palavra[i]->huffCode = (char*)malloc(sizeof(char)*9);
+        dicionario->palavra[i]->huffCode = (char*)malloc(sizeof(char)*MAXHUFFLENGTH);
         strcpy(dicionario->palavra[i]->huffCode, "");
     }
 
-    codigo = (char*)malloc(sizeof(char)*9);
-    strcpy(codigo, "");
+    codigo[0] = '\0';
 
 
     DFS(dicionario, h->arvore, codigo);//chama a busca em profundidade para montar o dicionario
@@ -230,7 +252,12 @@ void criaDicionario(Huffman *h){
 * Escreve o caracter q esta no buffer da struct h no arquivo de saida
 */
 void writeChar(Huffman *h, unsigned char c){
-    h->textoEntrada = (unsigned char *) realloc(h->textoEntrada,h->textSize+1);
+    static int tamanhoAlocado = 0;
+    if(h->textSize == tamanhoAlocado){
+        tamanhoAlocado++;
+        tamanhoAlocado *= 2; // troque para nao perder muito tempo com o realloc
+        h->textoEntrada = (unsigned char *) realloc(h->textoEntrada,tamanhoAlocado);
+    }
     h->textoEntrada[h->textSize++]=c;
 }
 void writeInt(Huffman *h, int i){
@@ -286,10 +313,21 @@ void writeall(Huffman *h, FILE* output){
 void readHeader(Huffman *h, FILE* output){
     fread(h->freq,sizeof(int),256, output);
 }
+void readAll(Huffman *h, FILE* input){
+    int curpos = ftell(input);
+    fseek(input,0,SEEK_END);
+    int endpos = ftell(input);
+    h->textSize = endpos - curpos;
+    fseek(input,curpos,SEEK_SET);
 
-unsigned char readBit(Huffman *h, FILE *input){
+    h->textoEntrada = (unsigned char *) malloc(h->textSize*sizeof(unsigned char));
+    fread(h->textoEntrada,sizeof(unsigned char), h->textSize, input);
+
+}
+unsigned char readBit(Huffman *h){
     if(h->bufferPos == -1){
-        fread(&(h->buffer),sizeof(unsigned char),1,input);
+        h->buffer = h->textoEntrada[h->textoEntradaPos];
+        h->textoEntradaPos++;
         h->bufferPos = 7;
     }
     unsigned char bit = (h->buffer & (1 << h->bufferPos));
@@ -297,27 +335,27 @@ unsigned char readBit(Huffman *h, FILE *input){
     h->bufferPos--;
     return bit;
 }
-char extractChar(Huffman *h,noArvore *no, FILE *input){
+char extractChar(Huffman *h,noArvore *no){
     if(no->esq == NULL&& no->dir == NULL ){
         return no->valor;
     }
-    char bit = readBit(h,input);
+    char bit = readBit(h);
     if(bit == 1){
-        return extractChar(h,no->esq, input);
+        return extractChar(h,no->esq);
     } else {
-        return extractChar(h, no->dir, input);
+        return extractChar(h, no->dir);
     }
 }
-char readChar(Huffman *h, FILE *input){
-    return extractChar(h,h->arvore, input);
+char readChar(Huffman *h){
+    return extractChar(h,h->arvore);
 }
-int readInt(Huffman *h, FILE *input){
+int readInt(Huffman *h){
     int i = 0;
     char *ptr = (char*) (&i);
-    ptr[0] = readChar(h,input);
-    ptr[1] = readChar(h,input);
-    ptr[2] = readChar(h,input);
-    ptr[3] = readChar(h,input);
+    ptr[0] = readChar(h);
+    ptr[1] = readChar(h);
+    ptr[2] = readChar(h);
+    ptr[3] = readChar(h);
     return i;
 }
 Huffman* readHuffmanFile(FILE *input){
@@ -325,14 +363,8 @@ Huffman* readHuffmanFile(FILE *input){
     h->bufferPos = -1;
     fseek(input,0, SEEK_SET);
     readHeader(h,input);
+    readAll(h, input);
     criaArvore(h, 1);
     criaDicionario(h);
     return h;
 }
-
-
-
-
-
-
-

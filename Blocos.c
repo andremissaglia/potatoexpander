@@ -1,4 +1,5 @@
 #include "Blocos.h"
+#include "Huffman.h"
 #include <stdlib.h>
 /**
 * Guarda uma das matrizes RGB no formato de uma lista de blocos, sendo cada bloco de 64 bytes.
@@ -44,13 +45,15 @@ BMPImage *recriateImage(Blocos *b){
     make_BMPHeader(bmp);
     return bmp;
 }
-void writeHuffman(Blocos *b, Huffman *h){
+void writeRL(Blocos *b, Carreira *rl){
     int i,j;
-    writeInt(h,b->width);
-    writeInt(h,b->height);
+    writeInt(rl->huffman,b->width);
+    writeInt(rl->huffman,b->height);
     for(i = 0; i < b->nblocos;i++){
         for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
-            writeChar(h,b->blocos[i][j]);
+
+
+            RLWriteChar(rl,b->blocos[i][j]);
         }
     }
 }
@@ -87,20 +90,18 @@ unsigned char **makeMatrix(int width, int height, unsigned char **blocks){
         }
         return matrix;
 }
-Blocos *readBlocksHuffman(Huffman *h, FILE *input){
+Blocos *readBlocksRL(Carreira *rl){
     int i,j;
     Blocos *b = newBlocos();
-    b->width = readInt(h,input);
-    b->height = readInt(h, input);
+    b->width = readInt(rl->huffman);
+    b->height = readInt(rl->huffman);
     b->nblocos = 3*b->width*b->height*BLOCKSIZE*BLOCKSIZE;
     b->blocos = (unsigned char **) malloc(b->nblocos*sizeof(unsigned char*));
-    printf("%d\n", b->nblocos);
     for(i = 0; i < b->nblocos;i++){
         b->blocos[i] = (unsigned char *) malloc(BLOCKSIZE*BLOCKSIZE*sizeof(unsigned char));
         for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
-            b->blocos[i][j] = readChar(h,input);
+            b->blocos[i][j] = RLReadChar(rl);
         }
     }
-    printf("hey\n");
     return b;
 }

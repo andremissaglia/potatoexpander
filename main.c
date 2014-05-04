@@ -30,7 +30,8 @@ char **getTokens(int *argc, char *buffer);
 /**
 * Exibe comandos disponiveis.
 */
-void help(int *argc, char *argv[]);
+void help(int argc, char *argv[]);
+
 int main(int argc, char *argv[]){
 	char buffer[LINE_BUFFER];
 	char **commandArgv;
@@ -71,8 +72,8 @@ int main(int argc, char *argv[]){
             }
         }
         free(commandArgv);
-
     }
+    return EXIT_SUCCESS;
 }
 
 void readLine(char *buffer, int sizeMax){
@@ -105,7 +106,7 @@ char **getTokens(int *argc, char *buffer){
     return commandArgv;
 }
 
-void help(int *argc, char *argv[]){
+void help(int argc, char *argv[]){
     if(argc > 1){
         if(strcmp(argv[1],"compress") == 0){
             showCompressHelp();

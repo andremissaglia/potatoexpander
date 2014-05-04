@@ -2,6 +2,7 @@
 #include "Compress.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void compressInput(int argc, char *argv[]){
     if(argc == 2 && strcmp(argv[1],"help") == 0){

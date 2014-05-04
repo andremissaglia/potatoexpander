@@ -1,4 +1,6 @@
 #include "Image.h"
+
+#include <stdlib.h>
 BMPHeader *newBMPHeader(){
     BMPHeader *bmp = (BMPHeader *) calloc(1,sizeof(BMPHeader));
     bmp->type = 0x4d42; // BM
@@ -120,14 +122,13 @@ void make_BMPHeader(BMPImage *bmp){
     bmp->header->size = bmp->header->DIPSize+14+bmp->header->bitmap_size;
 }
 void freeBMP(BMPImage *bmp){
-    free(bmp->header);
-
     int i;
     for(i = 0; i < bmp->header->width;i++){
         free(bmp->B[i]);
         free(bmp->G[i]);
         free(bmp->R[i]);
     }
+    free(bmp->header);
     free(bmp->B);
     free(bmp->G);
     free(bmp->R);
