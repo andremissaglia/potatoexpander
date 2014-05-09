@@ -13,7 +13,7 @@ void compress(FILE *input, FILE *output){
         createBlocos(img,b);
         Huffman *h = newHuffman();
         Carreira *rl = newCarreira(h);
-        //vetorizar(b);
+        vetorizar(b);
         writeRL(b,rl);
         flush(rl);
         criaArvore(h, 0);
