@@ -8,7 +8,7 @@
 */
 typedef struct _noArvore noArvore;
 struct _noArvore{
-        char valor;
+        unsigned char valor;
         int freq;
         noArvore* esq;
         noArvore* dir;
@@ -18,7 +18,7 @@ struct _noArvore{
 * Verbete do dicionario de Huffman
 */
 typedef struct {
-        char valor;
+        unsigned char valor;
         char* huffCode;
         int frequencia;
 }Verbete;
@@ -30,16 +30,16 @@ typedef struct {
         Verbete** palavra;
         int nVerbetes;
 }Dicionario;
-
 /**
 * Objeto criado para controle da compressao em Huffman.
 */
 typedef struct {
         int textSize;//tamanho do texto(3*area da imagem)
+        unsigned int tamanhoAlocado; // tamanho alocado para o vetor "textoEntrada"
         unsigned char* textoEntrada;//texto de entrada que sera compactado
         unsigned char buffer;
         char bufferPos;//valor entre 0 e 7 indicando quanto o bit deve ser deslocado para ser inserido no buffer
-        int freq[256];//vetor que guarda as frequencias de cada um dos possiveis valores de uma componente de cor dor RGB(1 byte).
+        unsigned int freq[256];//vetor que guarda as frequencias de cada um dos possiveis valores de uma componente de cor dor RGB(1 byte).
         noArvore* arvore; //guarda a arvore de Huffman
         Dicionario* dicionario;//guarda o dicionario de huffman
         int nVerbetes;//numero de verbetes do dicionario
@@ -60,7 +60,7 @@ void freeHuffman(Huffman* h);
 * Escreve o caracter q esta no buffer da struct h no arquivo de saida
 */
 void writeChar(Huffman *h, unsigned char c);
-void writeInt(Huffman *h, int i);
+void writeInt(Huffman *h, unsigned int i);
 
 
 /**
@@ -90,10 +90,10 @@ Huffman* readHuffmanFile(FILE *input);
 /**
 * Le o proximo char
 */
-char readChar(Huffman *h);
+unsigned char readChar(Huffman *h);
 /**
 * Lê o proximo Int
 */
-int readInt(Huffman *h);
+unsigned int readInt(Huffman *h);
 
 #endif

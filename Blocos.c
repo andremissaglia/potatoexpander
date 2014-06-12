@@ -4,11 +4,11 @@
 /**
 * Guarda uma das matrizes RGB no formato de uma lista de blocos, sendo cada bloco de 64 bytes.
 */
-void writeBlocks(unsigned char **matrix, int width, int height, unsigned char **blocks);
+void writeBlocks(unsigned char **matrix, unsigned int width, unsigned int height, unsigned char **blocks);
 /**
 * Converte uma parte dos blocos de 64 bytes em uma das componentes RGB.
 */
-unsigned char **makeMatrix(int width, int height, unsigned char **blocks);
+unsigned char **makeMatrix(unsigned int width, unsigned int height, unsigned char **blocks);
 Blocos* newBlocos(){
     Blocos *b = (Blocos*) malloc(sizeof(Blocos));
     b->nblocos =0;
@@ -51,29 +51,27 @@ void writeRL(Blocos *b, Carreira *rl){
     writeInt(rl->huffman,b->height);
     for(i = 0; i < b->nblocos;i++){
         for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
-
-
             RLWriteChar(rl,b->blocos[i][j]);
         }
     }
 }
-void writeBlocks(unsigned char **matrix, int width, int height, unsigned char **blocks){
+void writeBlocks(unsigned char **matrix, unsigned int width, unsigned int height, unsigned char **blocks){
     int i,j;//posicao do bloco
     int x,y; //coordenadas internas ao bloco
     //para cada bloco
     for(i = 0; i < width;i++){
         for(j = 0; j < height; j++){
-            blocks[LINEAR_AT(i,j,height)] = (unsigned char *) malloc(BLOCKSIZE*BLOCKSIZE*sizeof(unsigned char));
+            blocks[LINEAR_AT(i,j,width)] = (unsigned char *) malloc(BLOCKSIZE*BLOCKSIZE*sizeof(unsigned char));
             //para cada pixel referente
             for(x = 0; x < BLOCKSIZE; x++){
                     for(y = 0; y < BLOCKSIZE; y++){
-                            blocks[LINEAR_AT(i,j,height)][LINEAR_AT(x,y,BLOCKSIZE)] = matrix[i*BLOCKSIZE+x][j*BLOCKSIZE+y];
+                            blocks[LINEAR_AT(i,j,width)][LINEAR_AT(x,y,BLOCKSIZE)] = matrix[i*BLOCKSIZE+x][j*BLOCKSIZE+y];
                     }
             }
         }
     }
 }
-unsigned char **makeMatrix(int width, int height, unsigned char **blocks){
+unsigned char **makeMatrix(unsigned int width, unsigned int height, unsigned char **blocks){
         unsigned char **matrix;
         int i,j;
 
@@ -85,7 +83,7 @@ unsigned char **makeMatrix(int width, int height, unsigned char **blocks){
         //reconstruir matriz
         for(i = 0; i < width*BLOCKSIZE; i++){
             for(j = 0; j < height*BLOCKSIZE; j++){
-                matrix[i][j] = blocks[LINEAR_AT(i/BLOCKSIZE,j/BLOCKSIZE, height)][LINEAR_AT(i%BLOCKSIZE,j%BLOCKSIZE, BLOCKSIZE)];
+                matrix[i][j] = blocks[LINEAR_AT(i/BLOCKSIZE,j/BLOCKSIZE, width)][LINEAR_AT(i%BLOCKSIZE,j%BLOCKSIZE, BLOCKSIZE)];
             }
         }
         return matrix;
@@ -95,12 +93,13 @@ Blocos *readBlocksRL(Carreira *rl){
     Blocos *b = newBlocos();
     b->width = readInt(rl->huffman);
     b->height = readInt(rl->huffman);
-    b->nblocos = 3*b->width*b->height*BLOCKSIZE*BLOCKSIZE;
+    b->nblocos = 3*b->width*b->height;
     b->blocos = (unsigned char **) malloc(b->nblocos*sizeof(unsigned char*));
     for(i = 0; i < b->nblocos;i++){
         b->blocos[i] = (unsigned char *) malloc(BLOCKSIZE*BLOCKSIZE*sizeof(unsigned char));
         for(j = 0; j <BLOCKSIZE*BLOCKSIZE;j++){
             b->blocos[i][j] = RLReadChar(rl);
+
         }
     }
     return b;

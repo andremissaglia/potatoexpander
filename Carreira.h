@@ -1,12 +1,23 @@
+/**
+* Provem uma abstracao para leitura e escrita de *unsigned char*,
+* compactando quando se encontra uma sequencia de caracteres iguais
+* maior que 3.
+*/
 #ifndef __CARREIRA
 #define __CARREIRA
 
 #include "Huffman.h"
-//Caractere para controle da codificadao por carreira
-#define SKIPCHAR 255
-//Caso o usuario tente codificar SKIPCHAR, sera automaticamente
-//substituido por REPLACECHAR para evitar problemas
-#define REPLACECHAR 254
+/**
+* Caractere para controle da codificadao por carreira
+*/
+#define SKIPCHAR 85
+/**
+* Caso o usuario tente codificar SKIPCHAR, sera automaticamente
+* substituido por REPLACECHAR para evitar problemas.
+* Foi usado um valor aleatorio (84) pois o valor antigo (255) era muito usado
+* apos a DCT, e a imagem perdia bastante a qualidade. Este valor aparentemente apresenta bons resultados.
+*/
+#define REPLACECHAR 84
 
 /**
 * Estrutura basica com os atributos de "Carreira".

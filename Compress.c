@@ -4,7 +4,7 @@
 #include "Huffman.h"
 #include "Carreira.h"
 #include "Vetorizacao.h"
-
+#include "DCT.h"
 #include <stdlib.h>
 void compress(FILE *input, FILE *output){
         BMPImage *img= readBMP(input);
@@ -13,9 +13,12 @@ void compress(FILE *input, FILE *output){
         createBlocos(img,b);
         Huffman *h = newHuffman();
         Carreira *rl = newCarreira(h);
+        DCT(b);
         vetorizar(b);
         writeRL(b,rl);
+
         flush(rl);
+
         criaArvore(h, 0);
         criaDicionario(h);
         writeall(h, output);
@@ -24,4 +27,3 @@ void compress(FILE *input, FILE *output){
         freeBlocos(b);
         free(rl);
 }
-

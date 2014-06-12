@@ -73,6 +73,7 @@ int main(int argc, char *argv[]){
         }
         free(commandArgv);
     }
+    free(commandArgv);
     return EXIT_SUCCESS;
 }
 

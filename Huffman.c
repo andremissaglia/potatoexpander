@@ -8,6 +8,7 @@ Huffman* newHuffman(){
 
         Huffman *h = (Huffman *)malloc(sizeof(Huffman));
         h->textSize = 0;
+        h->tamanhoAlocado = 0;
         h->textoEntrada = NULL;
 
         for(i=0;i<256;i++){
@@ -99,10 +100,8 @@ void criaArvore(Huffman *h, int flagDescompressao){
     for(i=0; i<256;i++){
         if(h->freq[i] > 0){
             size = size+1;
-            //printf("\n[%d]: %d",i,h->freq[i] );
         }
     }
-
     vetFolhas = (noArvore**)malloc(sizeof(noArvore*)*size);//vetor que guardara os nos folhas da arvore de huffman.
 
 
@@ -143,6 +142,7 @@ void criaArvore(Huffman *h, int flagDescompressao){
     //imprimeVet(vetFolhas,tam);
 
     h->arvore = vetFolhas[0];
+    free(vetFolhas);
     h->nVerbetes = size;
 
 }
@@ -189,6 +189,8 @@ void imprimeDicionario(Huffman *h){
                h->dicionario->palavra[i]->huffCode,
                h->dicionario->palavra[i]->frequencia);
     }
+    printf("\n\n===============================================");
+    printf("\n\nNverbetes: %d",h->dicionario->nVerbetes);
     printf("\n\n===============================================");
     printf("\n\n");
 
@@ -252,15 +254,14 @@ void criaDicionario(Huffman *h){
 * Escreve o caracter q esta no buffer da struct h no arquivo de saida
 */
 void writeChar(Huffman *h, unsigned char c){
-    static int tamanhoAlocado = 0;
-    if(h->textSize == tamanhoAlocado){
-        tamanhoAlocado++;
-        tamanhoAlocado *= 2; // troque para nao perder muito tempo com o realloc
-        h->textoEntrada = (unsigned char *) realloc(h->textoEntrada,tamanhoAlocado);
+    if(h->textSize == h->tamanhoAlocado){
+        h->tamanhoAlocado++;
+        h->tamanhoAlocado *= 2; // troque para nao perder muito tempo com o realloc
+        h->textoEntrada = (unsigned char *) realloc(h->textoEntrada,h->tamanhoAlocado*sizeof(unsigned char));
     }
     h->textoEntrada[h->textSize++]=c;
 }
-void writeInt(Huffman *h, int i){
+void writeInt(Huffman *h, unsigned int i){
     unsigned char *ptr = (unsigned char *)(&i);
     writeChar(h,ptr[0]);
     writeChar(h,ptr[1]);
@@ -270,24 +271,24 @@ void writeInt(Huffman *h, int i){
 /**
 * Escreve um bit no buffer.
 */
-void writeBit(Huffman *h, FILE *out, char bit){
+void writeBit(Huffman *h, FILE *out, unsigned char bit){
     h->buffer = h->buffer | (bit << h->bufferPos);
     h->bufferPos--;
     if(h->bufferPos == -1){
-        fwrite(&(h->buffer),sizeof(char),1,out);
+        fwrite(&(h->buffer),sizeof(unsigned char),1,out);
         h->bufferPos = 7;
         h->buffer = 0;
     }
 }
 
 void writeHeader(Huffman *h, FILE* output){
-    fwrite(h->freq,sizeof(int),256, output);
+    fwrite(h->freq,sizeof(unsigned int),256, output);
 }
 
 void writeall(Huffman *h, FILE* output){
     int i,j;
     int size = h->dicionario->nVerbetes;
-    char c;
+    unsigned char c;
     writeHeader(h, output);
     //percorre o texto codificando-o
     char *aux;
@@ -335,7 +336,7 @@ unsigned char readBit(Huffman *h){
     h->bufferPos--;
     return bit;
 }
-char extractChar(Huffman *h,noArvore *no){
+unsigned char extractChar(Huffman *h,noArvore *no){
     if(no->esq == NULL&& no->dir == NULL ){
         return no->valor;
     }
@@ -346,11 +347,11 @@ char extractChar(Huffman *h,noArvore *no){
         return extractChar(h, no->dir);
     }
 }
-char readChar(Huffman *h){
+unsigned char readChar(Huffman *h){
     return extractChar(h,h->arvore);
 }
-int readInt(Huffman *h){
-    int i = 0;
+unsigned int readInt(Huffman *h){
+    unsigned int i = 0;
     char *ptr = (char*) (&i);
     ptr[0] = readChar(h);
     ptr[1] = readChar(h);

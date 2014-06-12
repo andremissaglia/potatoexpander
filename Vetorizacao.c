@@ -20,21 +20,21 @@ int mask[64] = {0,
                 47,54,61,
                 62,55,
                 63};
-   
-   
+
+
 
 
     for(i=0; i < b->nblocos;i++){
        a = (unsigned char*)malloc(sizeof(unsigned char)*(64));
        for(j=0;j<64;j++){
           a[j] = b->blocos[i][mask[j]];
-       
+
        }
-       
+
        free(b->blocos[i]);
        b->blocos[i] = a;
-                                     
-    }   
+
+    }
 }
 
 
@@ -58,17 +58,17 @@ int mask[64] = {0,
                 62,55,
                 63};
 
-    
+
     for(i=0; i < b->nblocos;i++){
       a = (unsigned char*)malloc(sizeof(unsigned char)*(64));
-                                     
+
        for(j=0;j<64;j++){
           a[mask[j]] = b->blocos[i][j];
-       
+
        }
-       
+
        free(b->blocos[i]);
        b->blocos[i] = a;
-                                     
-    } 
+
+    }
 }

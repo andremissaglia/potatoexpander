@@ -38,13 +38,33 @@ typedef struct {
     unsigned char **B;
 
 } BMPImage;
-//TODO:documentar
+/**
+* Instancia um novo cabecalho.
+*/
 BMPHeader *newBMPHeader();
+/**
+* Le o cabecalho de um arquivo bmp.
+*/
 BMPHeader *readBMPHeader(FILE *fp);
+/**
+* Escreve o cabecalho bmp no arquivo, e preenche com zeros ate a posicao inicial para escrita da matriz.
+*/
 void writeBMPHeader(FILE *fp, BMPHeader *bmp);
+/**
+* Le um arquivo BMP e extrai suas informacoes.
+*/
 BMPImage *readBMP(FILE *fp);
+/**
+* Escreve um arquivo BMP com a matriz e cabecalho dados.
+*/
 void writeBMP(FILE *fp, BMPImage *bmp);
+/**
+* Calcula os valores "bitmap_size" e "size" do cabecalho do arquivo
+*/
 void make_BMPHeader(BMPImage *bmp);
+/**
+* Libera a memoria alocada pelo BMPImage.
+*/
 void freeBMP(BMPImage *bmp);
 
 #endif
